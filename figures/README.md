@@ -14,9 +14,9 @@ with `torch.manual_seed(42)` (SAVi is stochastic).
 
 | Video | mp4 | CLI args | tracked slot | object |
 | --- | --- | --- | --- | --- |
-| v10800 | `data/clevrer_val/video_10000-11000/video_10800.mp4` | `--start-frame 20 --stride 8` | 6 | cyan sphere |
-| v10500 | `data/clevrer_val/video_10000-11000/video_10500.mp4` | `--start-frame 20 --stride 8` | 1 | orange object |
-| v10100 | `data/clevrer_val/video_10000-11000/video_10100.mp4` | `--start-frame 20 --stride 8` | 3 | red cylinder |
+| v10800 | `../data/clevrer_val/video_10000-11000/video_10800.mp4` | `--start-frame 20 --stride 8` | 6 | cyan sphere |
+| v10500 | `../data/clevrer_val/video_10000-11000/video_10500.mp4` | `--start-frame 20 --stride 8` | 1 | orange object |
+| v10100 | `../data/clevrer_val/video_10000-11000/video_10100.mp4` | `--start-frame 20 --stride 8` | 3 | red cylinder |
 
 For each video, three PNGs are saved:
 
@@ -33,13 +33,13 @@ For each video, three PNGs are saved:
 ## Regenerate
 
 ```bash
-PYTHONPATH=. .venv/bin/python scripts/make_diagnostic_figures.py \
-    /home/arda/projects/DSAIT4030/data/clevrer_val/video_10000-11000/video_10800.mp4 \
+python scripts/make_diagnostic_figures.py \
+    ../data/clevrer_val/video_10000-11000/video_10800.mp4 \
     --start-frame 20 --stride 8 --tag v10800 --slot-track 6
-PYTHONPATH=. .venv/bin/python scripts/make_diagnostic_figures.py \
-    /home/arda/projects/DSAIT4030/data/clevrer_val/video_10000-11000/video_10500.mp4 \
+python scripts/make_diagnostic_figures.py \
+    ../data/clevrer_val/video_10000-11000/video_10500.mp4 \
     --start-frame 20 --stride 8 --tag v10500 --slot-track 1
-PYTHONPATH=. .venv/bin/python scripts/make_diagnostic_figures.py \
-    /home/arda/projects/DSAIT4030/data/clevrer_val/video_10000-11000/video_10100.mp4 \
+python scripts/make_diagnostic_figures.py \
+    ../data/clevrer_val/video_10000-11000/video_10100.mp4 \
     --start-frame 20 --stride 8 --tag v10100 --slot-track 3
 ```

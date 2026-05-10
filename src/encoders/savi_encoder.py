@@ -3,28 +3,30 @@ from typing import Any, Dict
 import torch
 import torch.nn as nn
 
+from src.encoders.savi import StoSAVi, STOSAVI_CLEVRER_CFG
+
 
 class SAViEncoder(nn.Module):
     """
-    Thin frozen wrapper around a pretrained SAVi-like checkpoint.
+    Thin frozen wrapper around the released SlotFormer StoSAVi-on-CLEVRER
+    checkpoint.
 
-    Expected forward contract from loaded model:
-      - input: dict or tensor containing frames [B, T, C, H, W]
-      - output: either
-          a) dict with key `output_slots_key`, or
-          b) tensor slots directly with shape [B, T, N, D]
+    The wrapped model is constructed via `StoSAVi(**STOSAVI_CLEVRER_CFG)`
+    and loaded from a state_dict (the released `.pth` is a state_dict, not a
+    pickled `nn.Module`). At inference we call `model({"img": frames})` and
+    surface `post_slots` / `post_masks` under configurable keys.
 
-    TODO(teammate): Replace `_load_raw_checkpoint` and `_run_model_forward`
-    with the exact SlotFormer/SAVi loading + forward logic used in your
-    validated local diagnostics.
+    Output contract:
+      slots:      Tensor[B, T, num_slots=7, slot_size=128]
+      slot_masks: Tensor[B, T, num_slots, 1, H, W] or None
     """
 
     def __init__(
         self,
         checkpoint_path: str,
-        input_key: str = "frames",
-        output_slots_key: str = "slots",
-        slot_masks_key: str = "slot_masks",
+        input_key: str = "img",
+        output_slots_key: str = "post_slots",
+        slot_masks_key: str = "post_masks",
         map_location: str = "cpu",
     ):
         super().__init__()
@@ -41,28 +43,27 @@ class SAViEncoder(nn.Module):
             p.requires_grad = False
 
     def _load_raw_checkpoint(self, checkpoint_path: str, map_location: str) -> nn.Module:
-        """Placeholder checkpoint loader for SAVi-style models."""
-        loaded = torch.load(checkpoint_path, map_location=map_location)
+        """Build StoSAVi from the CLEVRER config and load the released weights."""
+        ckpt = torch.load(checkpoint_path, map_location=map_location, weights_only=False)
+        if isinstance(ckpt, dict):
+            sd = ckpt.get("state_dict", ckpt.get("model", ckpt))
+        else:
+            sd = ckpt
 
-        if isinstance(loaded, dict) and "model" in loaded:
-            loaded = loaded["model"]
-
-        if not isinstance(loaded, nn.Module):
-            raise TypeError(
-                "Loaded checkpoint is not nn.Module. "
-                "TODO(teammate): adapt _load_raw_checkpoint for your SAVi format."
+        model = StoSAVi(**STOSAVI_CLEVRER_CFG)
+        result = model.load_state_dict(sd, strict=True)
+        if result.missing_keys or result.unexpected_keys:
+            raise RuntimeError(
+                f"SAVi state_dict did not match: "
+                f"missing={result.missing_keys[:5]}{'...' if len(result.missing_keys) > 5 else ''} "
+                f"unexpected={result.unexpected_keys[:5]}{'...' if len(result.unexpected_keys) > 5 else ''}"
             )
-        return loaded
+        # decoder path active in eval -> we get post_recons / post_masks
+        model.testing = False
+        return model
 
     def _run_model_forward(self, frames: torch.Tensor) -> Any:
-        """
-        Placeholder forward adapter.
-
-        TODO(teammate): if your SAVi checkpoint expects a different input structure
-        (e.g. specific key names, batch dict layout, or preprocessing metadata),
-        adapt this function.
-        """
-        return self.model({self.input_key: frames}) if self.input_key else self.model(frames)
+        return self.model({self.input_key: frames})
 
     @torch.no_grad()
     def forward(self, frames: torch.Tensor) -> Dict[str, Any]:

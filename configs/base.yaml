@@ -15,14 +15,12 @@ data:
   std: [0.229, 0.224, 0.225]
 
 encoder:
-  checkpoint_path: ""
-  input_key: "frames"
-  output_slots_key: "slots"
-  slot_masks_key: "slot_masks"
-  expected_num_slots: null
-  expected_slot_dim: null
-  # TODO: Replace this placeholder loader with validated
-  # SlotFormer/SAVi checkpoint loading snippet and exact return-key mapping
+  checkpoint_path: "checkpoints/stosavi_clevrer_params/model_12.pth"
+  input_key: "img"
+  output_slots_key: "post_slots"
+  slot_masks_key: "post_masks"
+  expected_num_slots: 7
+  expected_slot_dim: 128
 
 run:
   batch_size: 2

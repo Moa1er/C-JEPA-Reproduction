@@ -1,13 +1,13 @@
 # C-JEPA Setup Scaffold (Encoder Stage)
 
-This repository stage is intentionally limited to:
+This repository implements C-JEPA on CLEVRER. Phase 1 (current) covers the encoder pipeline:
 
 1. CLEVRER indexing (`jsonl`)
 2. video clip loading with temporal sampling
 3. frozen pretrained object-centric encoder inference
 4. saving per-video slots
 
-No masking/prediction heads/world-model logic is included.
+Masking, predictor, loss, and training are added in subsequent phases.
 
 ## Install
 
@@ -57,5 +57,5 @@ Outputs are stored as `.pt` files with:
 ## Notes
 
 - SAVi is first-class in this scaffold.
-- `src/encoders/savi_encoder.py` contains explicit TODO hooks for teammate-provided checkpoint loading details.
 - VideoSAUR support is intentionally deferred as a future extension.
+- Encoder validation outputs on CLEVRER val are in `figures/` (see `figures/README.md`).

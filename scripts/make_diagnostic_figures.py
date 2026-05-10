@@ -19,7 +19,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 import cv2
 import matplotlib
@@ -43,19 +43,20 @@ from src.encoders.savi_encoder import SAViEncoder  # noqa: E402
 SEED = 42
 
 
-def load_single_clip(video_path: Path, cfg: Dict[str, Any]) -> torch.Tensor:
-    """Load n_frames from a video at fixed stride/start, apply cfg["data"] transform.
+def load_single_clip(
+    video_path: Path,
+    transform: Callable,
+    n_frames: int,
+    stride: int,
+    start_frame: int,
+) -> torch.Tensor:
+    """Load n_frames from a video at fixed stride/start, apply per-frame transform.
 
     Mirrors src.data.clevrer_dataset's reader (cv2 seek + per-frame transform)
     so the diagnostics see exactly what training/extraction sees.
 
     Returns: Tensor[T, 3, H, W] float32.
     """
-    transform = build_frame_transform(cfg["data"])
-    n_frames = int(cfg["_diag"]["n_frames"])
-    stride = int(cfg["_diag"]["stride"])
-    start_frame = int(cfg["_diag"]["start_frame"])
-
     indices = [start_frame + n * stride for n in range(n_frames)]
 
     cap = cv2.VideoCapture(str(video_path))
@@ -117,11 +118,6 @@ def main() -> None:
 
     with open(args.config, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
-    cfg["_diag"] = {
-        "n_frames": int(cfg["data"]["clip_len"]),
-        "stride": args.stride,
-        "start_frame": args.start_frame,
-    }
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -134,10 +130,17 @@ def main() -> None:
         map_location="cpu",
     )
 
+    transform = build_frame_transform(cfg["data"])
+    n_frames = int(cfg["data"]["clip_len"])
     print(f"Loading clip: {args.video} "
           f"(start={args.start_frame}, stride={args.stride}, "
-          f"n={cfg['_diag']['n_frames']})")
-    clip = load_single_clip(args.video, cfg)                 # (T, 3, H, W)
+          f"n={n_frames})")
+    clip = load_single_clip(
+        args.video, transform,
+        n_frames=n_frames,
+        stride=args.stride,
+        start_frame=args.start_frame,
+    )                                                         # (T, 3, H, W)
     print(f"  clip: shape={tuple(clip.shape)} "
           f"range=[{clip.min():+.3f}, {clip.max():+.3f}]")
 

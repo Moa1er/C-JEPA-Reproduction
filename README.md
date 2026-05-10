@@ -1,13 +1,13 @@
-# C-JEPA Setup Scaffold (Encoder Stage)
+# C-JEPA Setup Scaffold
 
-This repository implements C-JEPA on CLEVRER. Phase 1 (current) covers the encoder pipeline:
+This repository implements C-JEPA on CLEVRER:
 
 1. CLEVRER indexing (`jsonl`)
 2. video clip loading with temporal sampling
 3. frozen pretrained object-centric encoder inference
 4. saving per-video slots
 
-Masking, predictor, loss, and training are added in subsequent phases.
+TODO: Masking, predictor, loss, and training
 
 ## Install
 

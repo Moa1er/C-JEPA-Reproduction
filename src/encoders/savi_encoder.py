@@ -8,13 +8,13 @@ from src.encoders.savi import StoSAVi, STOSAVI_CLEVRER_CFG
 
 class SAViEncoder(nn.Module):
     """
-    Thin frozen wrapper around the released SlotFormer StoSAVi-on-CLEVRER
-    checkpoint.
+    Thin frozen wrapper around a SAVi-style object-centric encoder.
 
-    The wrapped model is constructed via `StoSAVi(**STOSAVI_CLEVRER_CFG)`
-    and loaded from a state_dict (the released `.pth` is a state_dict, not a
-    pickled `nn.Module`). At inference we call `model({"img": frames})` and
-    surface `post_slots` / `post_masks` under configurable keys.
+    Constructs a `StoSAVi` from `STOSAVI_CLEVRER_CFG` and loads weights
+    from a state_dict checkpoint (the released SlotFormer `.pth` is a
+    state_dict, not a pickled `nn.Module`). Forward pass calls
+    `model({"img": frames})` and surfaces `post_slots` / `post_masks`
+    under configurable keys.
 
     Output contract:
       slots:      Tensor[B, T, num_slots=7, slot_size=128]

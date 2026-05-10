@@ -83,10 +83,14 @@ def load_single_clip(video_path: Path, cfg: Dict[str, Any]) -> torch.Tensor:
 
 
 def autopick_non_background_slot(masks: torch.Tensor) -> int:
-    """Pick the slot with the second-largest total mask mass.
+    """Pick the slot with the second-largest total mask mass as a rough
+    default.
 
-    The slot with the largest mass is almost always the background (floor /
-    backdrop in CLEVRER); the next-largest is typically a foreground object.
+    The largest is usually background, and the second is often a foreground
+    object — but not always. CLEVRER scenes vary: a static foreground slot
+    can have high mass while the moving slot has lower mass. For figures
+    intended for the report, pass --slot-track explicitly after eyeballing
+    the slot_masks figure.
     """
     # masks: (T, N, 1, H, W)
     mass = masks.sum(dim=(0, 2, 3, 4))                     # (N,)

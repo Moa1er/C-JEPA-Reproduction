@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # C-JEPA Setup Scaffold (Encoder Stage)
 
 This repository stage is intentionally limited to:
@@ -59,3 +60,6 @@ Outputs are stored as `.pt` files with:
 - SAVi is first-class in this scaffold.
 - `src/encoders/savi_encoder.py` contains explicit TODO hooks for teammate-provided checkpoint loading details.
 - VideoSAUR support is intentionally deferred as a future extension.
+=======
+# C-JEPA-Reproduction
+>>>>>>> cde34997c8afd5e683b0734b51e557a7a0ade903

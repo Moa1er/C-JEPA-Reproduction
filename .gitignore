@@ -1,0 +1,21 @@
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+
+# Local outputs/data artifacts
+outputs/
+data/*.jsonl
+*.pt
+*.pth
+*.pkl
+*.ckpt
+
+# Editor/OS
+.DS_Store
+Thumbs.db
+.vscode/

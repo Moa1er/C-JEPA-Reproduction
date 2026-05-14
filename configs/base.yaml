@@ -1,30 +1,28 @@
 seed: 42
-device: "cuda"
-num_workers: 4
-pin_memory: true
+device: "cpu"
+num_workers: 0
+pin_memory: false
 
 data:
-  index_file: "data/train.jsonl"
-  video_root: "C:/Users/SIC 187/Downloads/video_train/video_09000-10000"
-  video_glob: "video_09060.mp4"
-  split_name: "train"
-  clip_len: 16
-  resize: 224
+  index_file: "data/val.jsonl"
+  video_root: "/home/arda/projects/DSAIT4030/data/clevrer_val"
+  video_glob: "**/*.mp4"
+  split_name: "val"
+  clip_len: 6
+  resize: 64
   interpolation: "bilinear"
-  mean: [0.485, 0.456, 0.406]
-  std: [0.229, 0.224, 0.225]
+  mean: [0.5, 0.5, 0.5]
+  std: [0.5, 0.5, 0.5]
 
 encoder:
-  checkpoint_path: ""
-  input_key: "frames"
-  output_slots_key: "slots"
-  slot_masks_key: "slot_masks"
-  expected_num_slots: null
-  expected_slot_dim: null
-  # TODO: Replace this placeholder loader with validated
-  # SlotFormer/SAVi checkpoint loading snippet and exact return-key mapping
+  checkpoint_path: "checkpoints/stosavi_clevrer_params/model_12.pth"
+  input_key: "img"
+  output_slots_key: "post_slots"
+  slot_masks_key: "post_masks"
+  expected_num_slots: 7
+  expected_slot_dim: 128
 
 run:
   batch_size: 2
-  max_videos: 1
-  output_dir: "outputs/features/train"
+  max_videos: 8
+  output_dir: "outputs/features/val"
